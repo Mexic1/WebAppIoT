@@ -1,0 +1,6 @@
+flask
+threading
+json
+time
+azure.iot.hub
+azure.eventhub

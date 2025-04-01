@@ -1,0 +1,81 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Heading */
+h2 {
+    color: #333;
+}
+
+/* Buttons */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Status Text */
+#status {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 20px;
+}
+
+/* Table Styling */
+table {
+    width: 50%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed; /* Ensures equal column width */
+}
+
+/* Table Headers & Cells */
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+    width: 50%; /* Ensures equal width */
+}
+
+/* Table Header Styling */
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Alternating Row Colors */
+td {
+    background-color: #f9f9f9;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    table {
+        width: 90%;
+    }
+
+    button {
+        width: 80%;
+        padding: 12px;
+    }
+}

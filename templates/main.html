@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Arduino</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <h2>Control Arduino</h2>
+    <button onclick="sendCommand('on')">LED ON</button>
+    <button onclick="sendCommand('off')">LED OFF</button>
+    <button onclick="sendCommand('blink')">LED BLINK</button>
+    <p id="status">Starea Ledului: OFF </p>
+    
+
+
+    <h2>Latest Telemetry Data</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Temperature (°C)</th>
+            <th>Humidity (%)</th>
+        </tr>
+        </thead>
+        <tbody id="telemetry-data">
+        <tr>
+            <td id="temperature">Loading...</td>
+            <td id="humidity">Loading...</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <script>
+        
+        function sendCommand(command) {
+            fetch('/send_led_state', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ command: command })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status').innerText = `Starea Ledului: ${command.toUpperCase()}`;
+            });
+        }
+
+        function updateTelemetry() {
+            fetch('/get_telemetry')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('temperature').innerText = data.temperature;
+                document.getElementById('humidity').innerText = data.humidity;
+
+            });
+        }
+        setInterval(updateTelemetry, 5000);
+    </script>
+</body>
+</html>
