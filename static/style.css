@@ -1,71 +1,145 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #eef2ff; /* Soft blue background */
     text-align: center;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
 }
 
-/* Heading */
+/* Headings */
 h2 {
-    color: #333;
+    color: #1e3a8a; /* Darker blue */
+    margin-bottom: 15px;
+    font-size: 24px;
 }
 
 /* Buttons */
 button {
-    background-color: #007bff;
+    background-color: #2563eb; /* Vibrant blue */
     color: white;
     border: none;
-    padding: 10px 20px;
-    margin: 10px;
+    padding: 12px 18px;
     font-size: 16px;
+    font-weight: bold;
+    margin: 10px;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background 0.3s ease-in-out;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #1e40af; /* Deeper blue */
+    transform: scale(1.07);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Status Text */
+/* LED Status */
 #status {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
+    color: #1e3a8a; /* Darker blue */
+    margin: 15px 0;
+    background: #bfdbfe; /* Soft blue */
+    padding: 10px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Telemetry Table */
+table {
+    width: 60%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+    table-layout: fixed; /* Ensures equal column widths */
+}
+
+th, td {
+    padding: 14px;
+    text-align: center;
+    font-size: 18px;
+    width: 25%; /* Adjust percentage as needed for equal column widths */
+}
+
+/* Table Header */
+th {
+    background-color: #2563eb; /* Vibrant blue */
+    color: white;
+    font-size: 20px;
+}
+
+/* Table Rows */
+td {
+    background-color: white;
     color: #333;
+    font-size: 17px;
+}
+
+/* Add Separator Line Between Columns */
+th:nth-child(1), td:nth-child(1) {
+    border-right: 2px solid #1e3a8a; /* Dark Blue Separator */
+}
+
+/* Future Table - Same Styling */
+.future-table {
+    width: 60%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.future-table th {
+    background-color: #16a34a; /* Green */
+    color: white;
+    font-size: 20px;
+}
+
+.future-table td {
+    background-color: white;
+    color: #333;
+    font-size: 17px;
+}
+
+/* Custom Command Form */
+form {
     margin-top: 20px;
 }
 
-/* Table Styling */
-table {
-    width: 50%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    overflow: hidden;
-    table-layout: fixed; /* Ensures equal column width */
-}
-
-/* Table Headers & Cells */
-th, td {
+input {
     padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-    width: 50%; /* Ensures equal width */
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    width: 250px;
+    outline: none;
+    transition: border 0.3s ease-in-out;
 }
 
-/* Table Header Styling */
-th {
-    background-color: #007bff;
+input:focus {
+    border-color: #2563eb; /* Focus effect */
+}
+
+/* Submit Button */
+button[type="submit"] {
+    background-color: #2563eb;
     color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
-/* Alternating Row Colors */
-td {
-    background-color: #f9f9f9;
+button[type="submit"]:hover {
+    background-color: #1e40af;
+    transform: scale(1.07);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive Design */

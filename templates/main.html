@@ -32,6 +32,31 @@
         </tbody>
     </table>
 
+    <h2>Send Custom Command</h2>
+    <form onsubmit="sendCustomCommand(event)">
+        <input type="text" id="custom-command" placeholder="Enter command" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        function sendCustomCommand(event) {
+            event.preventDefault();
+            const message = document.getElementById('custom-command').value;
+            fetch('/send_custom_command', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Command "${message}" sent successfully!`);
+                document.getElementById('custom-command').value = '';
+            });
+        }
+    </script>
+
 
     <script>
         
