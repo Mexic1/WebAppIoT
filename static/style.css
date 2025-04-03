@@ -73,7 +73,7 @@ th {
 
 /* Table Rows */
 td {
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     color: #333;
     font-size: 17px;
 }
@@ -84,7 +84,7 @@ th:nth-child(1), td:nth-child(1) {
 }
 
 /* Future Table - Same Styling */
-.future-table {
+.message-table {
     width: 60%;
     margin: 20px auto;
     border-collapse: collapse;
@@ -93,13 +93,13 @@ th:nth-child(1), td:nth-child(1) {
     box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.future-table th {
+.message-table th {
     background-color: #16a34a; /* Green */
     color: white;
     font-size: 20px;
 }
 
-.future-table td {
+.message-table td {
     background-color: white;
     color: #333;
     font-size: 17px;

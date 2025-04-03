@@ -7,6 +7,7 @@ import smtplib
 import threading
 import time
 import json
+import pyodbc
 
 
 app = Flask(__name__)
@@ -14,14 +15,40 @@ app = Flask(__name__)
 # 🔹 Variabile Globale
 received_temperature = None
 received_humidity = None
-received_water = None
 
-# 🔹 Configurare Event Hub pentru a asculta mesajele de la Arduino
-#----------------------------------------------------------------------
 EVENT_HUB_CONNECTION_STRING = "Endpoint=sb://ihsuproddbres037dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=204trTHRb8HdtAxXONNIcWmERpe/OcoOSAIoTGt7Q2g=;EntityPath=iothub-ehub-arduinotem-63773205-02863a705e"
 EVENT_HUB_NAME = "iothub-ehub-arduinotem-63773205-02863a705e"  
 CONSUMER_GROUP = "$Default" 
 
+# 🔹Funcție pentru a te conecta la baza de date Azure SQL
+#----------------------------------------------------------------------
+def get_db_connection():
+    try:
+        server = 'ps2n.database.windows.net'
+        database = 'ps2n'
+        username = 'Mexic'
+        password = 'L0wlevel'
+        driver = '{ODBC Driver 17 for SQL Server}'
+
+        # Conectare la baza de date
+        connection = pyodbc.connect(f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={username};PWD={password}')
+        return connection
+    except Exception as e:
+        print(f"❌ Eroare la conexiune: {e}")
+        return None
+    
+def save_message_to_db(message_text):
+    conn = get_db_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            current_time = time.strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute("INSERT INTO Mesaje (Mesaj, Data) VALUES (?, ?)", (message_text, current_time))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"❌ Eroare la salvarea mesajului: {e}")
+#----------------------------------------------------------------------
 # 🔹 Configurare SMTP pentru a trimite emailuri
 #----------------------------------------------------------------------
 def send_email(subiect,mesaj):
@@ -51,9 +78,6 @@ def send_email(subiect,mesaj):
             print("Eroare la trimiterea e-mailului:", e)
 
 #----------------------------------------------------------------------
-
-
-
 # 🔹 Configurare Event Hub pentru a asculta mesajele de la Arduino
 #----------------------------------------------------------------------
 def on_event(partition_context, event):
@@ -97,8 +121,6 @@ listener_thread = threading.Thread(target=threaded_event_listener, daemon=True)
 listener_thread.start()
 #----------------------------------------------------------------------
 
-
-
 # 🔹 Configurare Azure IoT Hub pentru a trimite comenzi către Arduino
 #----------------------------------------------------------------------
 CONNECTION_STRING = "HostName=arduinotemp.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=204trTHRb8HdtAxXONNIcWmERpe/OcoOSAIoTGt7Q2g="
@@ -110,7 +132,19 @@ iot_hub_manager = IoTHubRegistryManager(CONNECTION_STRING)
 # 🔹 Rutele Flask
 @app.route("/")
 def index():
-    return render_template("main.html", received_temperature=received_temperature, received_humidity=received_humidity)
+    conn = get_db_connection()
+    messages = []
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT Mesaj, Data FROM Mesaje ORDER BY Data DESC")
+            messages = [{"Mesaj": row[0], "Data": row[1].strftime("%Y-%m-%d %H:%M:%S")} for row in cursor.fetchall()]
+            conn.close()
+        except Exception as e:
+            print(f"❌ Eroare la citirea mesajelor: {e}")
+    
+    return render_template("main.html", received_temperature=received_temperature, received_humidity=received_humidity, messages=messages)
+
 
 @app.route("/get_telemetry")
 def get_telemetry():
@@ -137,13 +171,21 @@ def send_command():
 def send_custom_command():
     try:
         data = request.get_json()
-        command = data["message"].lower()
+        command = data["message"]
+        save_message_to_db(command)
         message = json.dumps({"message": command})
         iot_hub_manager.send_c2d_message(DEVICE_ID, message)
+
+        return jsonify({
+            "status": "success",
+            "Mesaj": command,
+            "Data": time.strftime("%Y-%m-%d %H:%M:%S")
+        })
+    
     except Exception as e:
         print(f"❌ Failed to send message: {e}")
 
-    return jsonify({"status": "success", "message": "command"}), 200
+    #return jsonify({"status": "success", "message": "command"}), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
