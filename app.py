@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify,redirect, url_for, session,flash
 from azure.eventhub import EventHubConsumerClient
 from azure.iot.hub import IoTHubRegistryManager
 from email.mime.multipart import MIMEMultipart
@@ -8,10 +8,11 @@ import threading
 import time
 import json
 import pyodbc
+import re
 
 
 app = Flask(__name__)
-
+app.secret_key = 'secret123'
 # 🔹 Variabile Globale
 received_temperature = None
 received_humidity = None
@@ -120,6 +121,9 @@ def threaded_event_listener():
 listener_thread = threading.Thread(target=threaded_event_listener, daemon=True)
 listener_thread.start()
 #----------------------------------------------------------------------
+def is_valid_email(email):
+    regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(regex, email) is not None
 
 # 🔹 Configurare Azure IoT Hub pentru a trimite comenzi către Arduino
 #----------------------------------------------------------------------
@@ -130,8 +134,65 @@ iot_hub_manager = IoTHubRegistryManager(CONNECTION_STRING)
 
 
 # 🔹 Rutele Flask
-@app.route("/")
+@app.route('/')
+def home():
+    return render_template('login.html')
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    email = request.form['email']
+    parola = request.form['parola']
+    repeat_parola = request.form['repeat_parola']
+
+    if parola != repeat_parola:
+        flash('Parolele nu coincid. Te rugăm să le verifici.')
+        return redirect(url_for('home'))
+
+    if not is_valid_email(email):
+        flash('Email invalid. Formatul corect este exemplu@email.com')
+        return redirect(url_for('home'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM conturi WHERE email = ?", (email))
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        flash('Email deja înregistrat.')
+        return redirect(url_for('home'))
+    
+    cursor.execute("INSERT INTO conturi (email, parola) VALUES (?, ?)", (email, parola))
+    conn.commit()
+    conn.close()
+    flash('Cont creat cu succes! Te poți autentifica.')
+    return redirect(url_for('home'))
+
+@app.route('/signin', methods=['POST'])
+def signin():
+    email = request.form['email']
+    parola = request.form['parola']
+
+    if not is_valid_email(email):
+        flash('Email invalid. Formatul corect este exemplu@gmail.com')
+        return redirect(url_for('home'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM conturi WHERE email = ? AND parola = ?", (email, parola))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        session['email'] = email
+        return redirect(url_for('index'))
+    else:
+        flash('Email sau parolă incorectă.')
+        return redirect(url_for('home'))
+
+@app.route("/index")
 def index():
+    if 'email' not in session:
+        return redirect(url_for('home'))
     conn = get_db_connection()
     messages = []
     if conn:

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_login.css') }}">
+</head>
+<body>
+    <div class="box">
+        <h2>Autentificare</h2>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="message">{{ messages[0] }}</div>
+          {% endif %}
+        {% endwith %}
+        <form action="/signin" method="post">
+            <input type="email" name="email" placeholder="Email" required
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                title="Introdu o adresă de email validă, ex: exemplu@gmail.com">
+            <input type="password" name="parola" placeholder="Parola" required>
+            <button type="submit">Sign In</button>
+        </form>
+
+        <h3>Nu ai cont?</h3>
+        <form action="/signup" method="post">
+            <input type="email" name="email" placeholder="Email" required
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+            title="Introdu o adresă de email validă, ex: exemplu@gmail.com">
+            <input type="password" name="parola" placeholder="Parola" required>
+            <input type="password" name="repeat_parola" placeholder="Repeta Parola" required>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>

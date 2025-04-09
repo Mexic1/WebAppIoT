@@ -32,6 +32,7 @@
         </tbody>
     </table>
 
+
     <h2>Send Custom Command</h2>
     <form onsubmit="sendCustomCommand(event)">
         <input type="text" id="custom-command" placeholder="Enter command" required>
@@ -76,8 +77,8 @@
                 let cell1 = newRow.insertCell(0);
                 let cell2 = newRow.insertCell(1);
                 
-                cell1.textContent = data.mesaj;
-                cell2.textContent = data.data;
+                cell1.textContent = data.Mesaj;
+                cell2.textContent = data.Data;
                 
                 document.getElementById('custom-command').value = '';  // Șterge inputul
             } else {
